@@ -1,0 +1,27 @@
+{
+  "name": "localized-keywords",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@babel/core": "https://pkg.csb.dev/babel/babel/commit/5ba025d1/@babel/core",
+    "@babel/plugin-external-helpers": "~7.10.0",
+    "@babel/preset-env": "^7.10.0",
+    "codemirror": "^5.54.0",
+    "json5": "2.1.3",
+    "react": "16.11.0",
+    "react-codemirror2": "^7.2.0",
+    "react-dom": "16.11.0",
+    "styled-components": "4.4.1"
+  },
+  "scripts": {
+    "start": "react-scripts start"
+  },
+  "devDependencies": {
+    "prettier": "~2.0.5",
+    "react-scripts": "3.4.1"
+  },
+  "browserslist": {
+    "production": ["edge 16"],
+    "development": ["last 1 chrome version", "last 1 firefox version"]
+  }
+}
