@@ -2,43 +2,56 @@ import React from "react";
 import { render } from "react-dom";
 import { App } from "./components/App";
 
-const SOURCE = `如果 (true) {} 否则 {}
-si (true) {} sino {}
-🤞 {
+const INPUT = [
+  [
+    `如果 (🥟) {
+  alert("😋");
+} 否则 {
+  alert("😐");
+}`,
+    {
+      parserOpts: {
+        localizedKeywords: {
+          if: "chinese",
+          if: "如果",
+          else: "否则",
+        },
+      },
+    },
+  ],
+  [
+    `const 🌮 = nuevo Promise();`,
+    {
+      parserOpts: {
+        localizedKeywords: {
+          new: "spanish",
+          new: "nuevo",
+        },
+      },
+    },
+  ],
+  [
+    `🤞 {
   await fetch('/api');
 } 😱 (e) {
-  🤷‍♀️ (e.status === 400) { alert('1'); } 🤔 { alert('2'); }
-}`;
-const CONFIG = [
-  {
-    parserOpts: {
-      localizedKeywords: {
-        if: "chinese",
-        if: "如果",
-        else: "否则"
-      }
-    }
-  },
-  {
-    parserOpts: {
-      localizedKeywords: {
-        if: "spanish",
-        if: "si",
-        else: "sino"
-      }
-    }
-  },
-  {
-    parserOpts: {
-      localizedKeywords: {
-        if: "emoji",
-        if: "🤷‍♀️",
-        else: "🤔",
-        try: "🤞",
-        catch: "😱"
-      }
-    }
+  🤷‍ (e.status === 400) {
+    alert('!');
+  } 🤔 {
+    alert('?');
   }
+}`,
+    {
+      parserOpts: {
+        localizedKeywords: {
+          if: "emoji",
+          if: "🤷‍",
+          else: "🤔",
+          try: "🤞",
+          catch: "😱",
+        },
+      },
+    },
+  ],
 ];
 const PLUGIN = `export default function customPlugin(babel) {
   return {
@@ -52,10 +65,6 @@ const PLUGIN = `export default function customPlugin(babel) {
 `;
 
 render(
-  <App
-    defaultBabelConfig={CONFIG}
-    defaultSource={SOURCE}
-    defCustomPlugin={PLUGIN}
-  />,
+  <App defaultInput={INPUT} defCustomPlugin={PLUGIN} />,
   document.getElementById("root")
 );

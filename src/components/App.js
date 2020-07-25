@@ -12,8 +12,9 @@ function CompiledOutput({
   source,
   customPlugin,
   config,
+  onSourceChange,
   onConfigChange,
-  removeConfig
+  removeInput,
 }) {
   const [compiled, setCompiled] = useState(null);
   const debouncedPlugin = useDebounce(customPlugin, 125);
@@ -26,12 +27,12 @@ function CompiledOutput({
       );
       setCompiled({
         code,
-        size: new Blob([code], { type: "text/plain" }).size
+        size: new Blob([code], { type: "text/plain" }).size,
       });
     } catch (e) {
       setCompiled({
         code: e.message,
-        error: true
+        error: true,
       });
     }
   }, [source, config, debouncedPlugin]);
@@ -51,6 +52,9 @@ function CompiledOutput({
         />
       </Section>
       <Section>
+        <Code value={source} onChange={onSourceChange} docName="source.js" />
+      </Section>
+      <Section>
         <Code
           value={compiled?.code ?? ""}
           docName="result.js"
@@ -58,44 +62,40 @@ function CompiledOutput({
           isError={compiled?.error ?? false}
         />
       </Section>
-      <Toggle onClick={removeConfig} />
+      <Toggle onClick={removeInput} />
     </Wrapper>
   );
 }
 
-export const App = ({ defaultSource, defaultBabelConfig, defCustomPlugin }) => {
-  const [source, setSource] = React.useState(defaultSource);
-  const debouncedSource = useDebounce(source, 125);
-
+export const App = ({ defaultSource, defaultInput, defCustomPlugin }) => {
   const [enableCustomPlugin, toggleCustomPlugin] = React.useState(false);
   const [customPlugin, setCustomPlugin] = React.useState(defCustomPlugin);
 
-  const [babelConfig, setBabelConfig] = useState(
-    Array.isArray(defaultBabelConfig)
-      ? defaultBabelConfig
-      : [defaultBabelConfig]
+  const [input, setInput] = useState(
+    Array.isArray(defaultInput) ? defaultInput : [defaultInput]
   );
-  const updateBabelConfig = useCallback((config, index) => {
-    setBabelConfig(configs => {
-      const newConfigs = [...configs];
-      newConfigs[index] = config;
-
-      return newConfigs;
+  const updateInput = useCallback((value, index, config) => {
+    setInput((inputs) => {
+      const newInputs = [...inputs];
+      newInputs[index][config] = value;
+      return newInputs;
     });
   }, []);
-  const removeBabelConfig = useCallback(index => {
-    setBabelConfig(configs => configs.filter((c, i) => index !== i));
+  const removeInput = useCallback((index) => {
+    setInput((inputs) => inputs.filter((c, i) => index !== i));
   }, []);
 
-  let results = babelConfig.map((config, index) => {
+  let sections = input.map((value, index) => {
+    let [source, config] = value;
     return (
       <CompiledOutput
-        source={debouncedSource}
+        source={source}
         customPlugin={enableCustomPlugin ? customPlugin : undefined}
         config={config}
         key={index}
-        onConfigChange={config => updateBabelConfig(config, index)}
-        removeConfig={() => removeBabelConfig(index)}
+        onSourceChange={(value) => updateInput(value, index, 0)}
+        onConfigChange={(value) => updateInput(value, index, 1)}
+        removeInput={() => removeInput(index)}
       />
     );
   });
@@ -104,6 +104,7 @@ export const App = ({ defaultSource, defaultBabelConfig, defCustomPlugin }) => {
     <Root>
       <Section>
         <Actions>
+          <h3>Testing Out Localized JavaScript Keywords </h3>
           {/* <label>
             <input
               checked={enableCustomPlugin}
@@ -114,13 +115,13 @@ export const App = ({ defaultSource, defaultBabelConfig, defCustomPlugin }) => {
           </label> */}
           <button
             onClick={() =>
-              setBabelConfig(configs => [
-                ...configs,
-                configs[configs.length - 1]
-              ])
+              setInput((configs) => [...configs, configs[configs.length - 1]])
             }
           >
-            New Language
+            Add Language 🌐
+          </button>
+          <button>
+            <a href="https://github.com/hzoo/localized-keywords">GitHub</a>
           </button>
           {/* <button
             onClick={() => {
@@ -131,27 +132,17 @@ export const App = ({ defaultSource, defaultBabelConfig, defCustomPlugin }) => {
           </button> */}
         </Actions>
 
-        <Wrapper>
-          <Code
-            value={source}
-            onChange={val => setSource(val)}
-            docName="source.js"
-          />
-          {/* <AST source={source}></AST> */}
-        </Wrapper>
-
         {enableCustomPlugin && (
           <Wrapper>
             <Code
               value={customPlugin}
-              onChange={val => setCustomPlugin(val)}
+              onChange={(val) => setCustomPlugin(val)}
               docName="plugin.js"
             />
             <Toggle onClick={() => toggleCustomPlugin(false)} />
           </Wrapper>
         )}
-        {/* output code and config section*/}
-        {results}
+        {sections}
       </Section>
     </Root>
   );
@@ -218,7 +209,7 @@ const Code = styled(Editor)`
   padding: 4px;
   width: 100%;
 
-  ${p =>
+  ${(p) =>
     p.isError &&
     css`
       background: rgba(234, 76, 137, 0.2);
@@ -246,8 +237,8 @@ const ToggleRoot = styled.div`
 
 const Actions = styled(Wrapper)`
   border-bottom: 1px solid rgba(36, 40, 42, 1);
-  padding: 1rem;
-
+  padding: 0.5rem;
+  justify-content: space-between;
   button {
     margin-left: 1rem;
   }
