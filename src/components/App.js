@@ -118,7 +118,7 @@ export const App = ({ defaultSource, defaultInput, defCustomPlugin }) => {
               setInput((configs) => [...configs, configs[configs.length - 1]])
             }
           >
-            Add Language 🌐
+            Add Language
           </button>
           <button>
             <a href="https://github.com/hzoo/localized-keywords">GitHub</a>

@@ -13,6 +13,7 @@ const INPUT = [
       parserOpts: {
         localizedKeywords: {
           if: "chinese",
+          /* eslint-disable no-dupe-keys */
           if: "如果",
           else: "否则",
         },
@@ -25,6 +26,7 @@ const INPUT = [
       parserOpts: {
         localizedKeywords: {
           new: "spanish",
+          /* eslint-disable no-dupe-keys */
           new: "nuevo",
         },
       },
@@ -44,6 +46,7 @@ const INPUT = [
       parserOpts: {
         localizedKeywords: {
           if: "emoji",
+          /* eslint-disable no-dupe-keys */
           if: "🤷‍",
           else: "🤔",
           try: "🤞",
